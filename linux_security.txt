@@ -1,0 +1,23 @@
+Sysadmin security: 8 Linux lockdown controls
+https://www.redhat.com/sysadmin/locking-down-access
+
+#---------------------------- SSH KEYS ----------------------
+
+-- Configure passwordless authentication using SSH key pairs
+-- SSH key pair and a single jumpbox to establish secure access to systems
+
+$ ssh-keygen
+	default location to store keys -> ~/.ssh
+
+$ ls -al .ssh
+	id_rsa --> private key 
+	id_rsa.pub --> public key to be transfered to the remote system (protocol/key/email_identifier)
+
+$ ssh-keygen -lv
+	displays fingerprint and randomart image unique to the key. Info to be shared with other poeple who may need to verify the public key
+
+$ ssh-copy-id pmfb@something
+	propagating the public key to remote system
+
+$ ssh pmfb@something
+	to connect using the key pair

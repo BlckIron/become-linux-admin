@@ -1,0 +1,6 @@
+#----------------------- DNS -----------------------------
+/etc/resolv.conf
+	-- dont change it here
+
+/etc/hosts
+	-- add hostname entries here to have context locally

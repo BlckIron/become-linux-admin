@@ -1,0 +1,299 @@
+#--------------------------------- BASIC_COMMANDS -----------------------
+
+pwd -- How to see which directory you're in.
+ls -- How to list stuff in a Linux directory.
+cd -- How to change directory in Linux.
+mv -- How to move and rename files in Linux.
+rm -- How to remove files and directories in Linux.
+rmdir -- How to delete directories in Linux.
+touch -- How to create an empty file.
+mkdir -- How to create a directory in Linux.
+man -- How to get help in Linux
+
+#------------------------- WHATS_HAPPENING_ON_THIS_MACHINE ------------------
+
+w -- Who is on this machine (USER, TTY, FROM, LOGIN@, IDLE, JCPU, PCPU, WHAT)
+who -- Same thing with less info
+top -- Monitor processes (PID, USER,  %CPU, %MEM, TIME, COMMAND, Others)
+htop -- Same thing but better visualization
+netstat -- Monitor network (root gives more info on program name running)
+	-t TCP ports
+	-u UDP ports
+	-p PROGRAM ports
+	-l LISTENING ports
+	-n NUMERICAL
+
+#----------------------- BASIC_COMMANDS_2_AND_TEXT_EDITORS ------------------
+
+Notes on symbols and codes:
+.   current directory
+..  directory above
+../..  directory above the directory
+
+ls flags
+-a  all (hidden + all directories)
+-l  long (full information on file (or all files)
+-h  human (making it easy to read)
+-alh  all 3 flags combined
+
+Basic Codes:
+mkdir -- Makes a new directory (folder)
+	-Flagging with "-p" allows entire filepaths to be made
+rm -- Remove
+	-Flagging with "-r" (recursive) removes everything in that directory 
+cp -- Copy (e.g. cp location/file.txt newlocation/newfilename.txt)
+	-When wanting a copy in the same file location, use "." as the file location
+mv -- Move/Rename (to rename simply don't provide the directory)
+cat -- Read file. Multiple files can be read after each other by adding them to the cat command with spaces
+
+#---------------------------------- SHELL_FEATURES ---------------------------
+
+Every process running on a linux kernel has three chanels:
+	- STDIN  0
+	- STDOUT 1
+	- STDERR 2
+Redirections:
+
+$ echo "string" > file
+$ cat file
+	string
+
+$ echo "string2" > file
+$ cat file
+	string2
+
+$ echo "string3" >> file
+$ cat file
+	string2
+	string3
+
+$ ls unexist >> file
+ls cannot access `unexist` No such file or directory
+$ cat file
+	string2
+	string3
+
+$ ls unexist 2>> file
+$ cat file
+	string2
+	string3
+	ls cannot access `unexist` No such file or directory
+
+#------------------------ FILTERING_OUTPUT_AND_FINDING_THINGS ----------------
+
+&& 	-- To run a command2 after another command1
+cut 	-- Remove sections from each line of files
+		cut -d: -f2 file.txt (cuts every line by ":" and selects the second field)
+sort	-- Sort lines of text files
+uniq	-- Report or omit repeated lines
+wc	-- Print newline, word, and byte counts for each file
+
+#---------------------------- LINUX_FILE_PERMISSIONS --------------------
+
+Permissions -- [what, owner, group, others]
+
+what
+	d -- directory
+	l -- link
+
+owner/group/others
+	r --read
+	w --write
+	x --execute
+
+$ chmod 777 file --» giving 7 (all) permissions to owner, group and others
+$ chmod 640 file --» giving 6 (rw) permissions to owner, giving 4 (r) permissions to group and giving 0 (no) permissions to others
+
+$ chown file newowner --» keeps permissions but changes owner to newowner
+
+/etc/login.defs -- configuration file to control the behavior of the tools from the shadow-utils component. Applies permission rules to all the OS, passwords, etc. 
+
+
+#----------------------------- LINUX_ACCESS_CONTROL -----------------------
+
+ls -l
+	--long listing to see everything in current directory
+
+whoami
+	--who is curretly opperating the machine (which user)
+
+id
+	--shows user-id, group-id and list of groups user is in
+
+The user owns the objects he creates
+Everything in linux is denoted by objects
+	-files
+	-processes
+root can do every valid operation, some users can execute root commands
+
+#----------------------------- USER_ACCOUNT_MANAGEMENT ----------------------
+
+Important files:
+$ tail /etc/passwd
+	--pmfb:x:1000:1000:Pedro Barreiros:/home/pmfb:/bin/bash
+	--[user]:[pass]:[uid]:[gid]:[userinfo]:[homedir]:[defaultshell]
+
+	[pass] was moved to /etc/shadow in hashed 
+	
+	be careful with the ammount of users. In some form or another may of them are security holes. 
+
+$ tail /etc/shadow
+	--pmfb:$6$5Qnibm3AwBkgGdX9$ElrRU.sxOSVziqvDiax8mY6.Q8tN6s81CPv5Dsy7MDFtwcRBn./dfRVH1D8Nh2nq3XYRWH8dOyINEwicwMtp4/::0:99999:7:::
+	--[user]:[saltedhashpassword]:[datecreated]:[0]:[dateexpire]:[daystochange]:::
+
+	if [saltedhashpassword] is "*" there is no password. Cannot login as that user.
+	if [saltedhashpassword] is "!" the login is disabled. Used to lock accounts.
+
+$ tail /etc/group
+	shows groups and which users belong in them
+
+Commands for editing:
+$ useradd -m -d /home/testuser -s /bin/bash testuser -
+	m -- create home dir
+	d -- define were home dir is
+	s -- define shell dir
+	u -- user id (i.e special user to sync with ldap)
+	g -- group id (i.e staff group)
+	username
+	
+	$ tail /etc/passwd
+		-- testuser:x:1001:1001::/home/testuser:/bin/bash
+
+$ userdel testuser 
+	-- to delete user 
+
+$ usermod -L testuser
+	-- locks the user account (replacing password with "![salthashpasswod]")
+
+$ usermod -U testuser
+	-- unlocks the user account (replacing password with "[saltedhashpassword]")
+
+$ newusers [options] [file]
+	-- batch way of creating users from a file
+
+Other info:
+-- Need to create password for new useres
+	$ passwd testuser
+		- input password
+		- input password again
+-- /etc/skel is the skeleton directory to create files for user home
+
+-- deleting a user doesn't delete his home directory
+
+#--------------------------- PROCESSESS -------------------------------------
+
+-- Every process has an ID
+-- init has always ID = 1
+-- Process ID are unique
+-- There can be several init processess if Virtualization is running on the host machine.
+-- Niceness of a process
+-- Kernel starts init at boot
+-- in the future it will be systemd
+-- death of a process
+UID -- which user owns the process
+EUID -- users that effectively own the process (irrespective of creator)
+
+#------------------------------- PROCESSES_SIGNALS ------------------------
+
+Signals - How processess communicate with eachother
+	-- Can be sent by the kernel when a process does something bad
+	-- Can be sent to processess to notify the parent process about info from child processess
+	-- Communicate state of the system
+
+$ kill 
+	command allows users to send signals to processes
+$ killall 
+	will kill processess by name
+$ pkill -u pmfb 
+	will kill all process from specific user pmfb
+
+#-------------------- STATE_NICENESS_HOW_TO_MONITOR_PROCESSESS ----------
+
+Process State
+-- Runnable (something eligable to be scheduled for  CPU time)
+-- Sleeping (waiting for something - i.e resources)
+-- Zombie (finnished, waiting to give back info and be killed by kernel)
+-- Stopped (in the middle of doing something but received stop signal - waiting to be resumed)
+
+if there are a lot of zombie process -> check ppid for source of problems
+parent may not have collected all info from child processess
+
+Niceness
+-- How respectfull a process is with the usage of resources (priority)
+	-22 most priority
+	+19 less priority
+
+	$ sudo renice -5 PID
+
+#------------------------------ THE_/PROC_FILESYSTEM -------------------------------
+
+command of interest:
+$ df
+	-- report file system disk space usage (moutned filesystems)
+
+proc file system is a special kind of filesystem mounted at default /proc -- Kernel posts imformation about running/stopped/active processes
+
+Each /proc directory is a PID (containing info on that specific process)
+
+
+when doing $ ls -alh /proc/1 
+	file sizes are 0 because they are created as they are read
+
+- cmd file -- what command proicess is currently executing
+- cmdline file -- how the process was called
+- cwd file -- link to where process is operating from 
+- environ file -- shows the environment variables
+- maps file -- memory mapping information (what shared libraries its using)
+- statm file -- memory status
+
+these files are used by other programs (i.e htop)
+
+IMPORTANT COMMAND
+$ strace man
+	this tool is a way to attach to process and see what they are doing
+
+
+#------------ Filesystem_Purpose_and_Absolute/Relative_Pathnames ----------------
+
+Filesystem API is the laguage used to deal with underlying file system
+
+different FileSystems
+	Linux	-- XT3, XT4, Butter FS, BTR FS
+	Windows -- NTFS, FAT
+	Solaris	-- ZFS
+	BSD	-- ZFS
+	MacOS	-- HFS, HFS+
+
+$ ls /dev
+	devices directory
+
+Everything in linux is represented trough files
+
+$ ps -aux | grep udevd
+	-- udevd is a system daemon that runs in the background listening for events;
+	-- when it senses a new hardware device being plugged in, it sets up "is there a driver for this?", "where is the driver?", "where to mount the hardware device"
+
+sockets --> inter-process comunication channels (network sockets; others)
+        processes and network comunicate trough the file sytem
+
+$ df -ah
+        -- list what is mounted on the OS
+
+Absolute path: path starts at root (work from anywhere)
+Relative path: wherever the user currently is
+
+/sbin system binaries
+        place custom scripts in the /sbin folder & then get the freedom to call them from anywhere just as native commands
+
+#------------------------ Filesystem_Layout_Overview -------------------------
+
+-- /bin : For binaries usable before the /usr partition is mounted. This is used for trivial binaries used in the very early boot stage or ones that you need to have available in booting single-user mode. Think of binaries like cat, ls, etc.
+-- /sbin : Same, but for binaries with superuser (root) privileges required.
+-- /usr/bin : Same as first, but for general system-wide binaries.
+-- /usr/sbin : Same as above, but for binaries with superuser (root) privileges required
+-- /etc : place for all the configuration data of installed applications. Check how things are configured. Good for troubleshooting (how is it configured)
+
+man hier -- important things about linux hierarchy
+
+
+
